@@ -3,7 +3,7 @@ import axios from "axios";
 import { getToken } from "../utils/storage"; 
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || "/api", 
+  baseURL:"/api", 
   withCredentials: false, 
   headers: {
     Accept: "application/json",

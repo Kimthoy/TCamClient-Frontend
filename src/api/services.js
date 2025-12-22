@@ -1,11 +1,19 @@
 // src/api/service.js
 import api from "./index";
 
-/**
- * Fetch public services (your controller's publicIndex)
- * Accepts optional params: { category, q, per_page, page }
- * Returns an array of services by default.
- */
+export const fetchServiceBanners = (params = {}) =>
+  api
+    .get("/banners/public", { params: { page: "services", ...params } })
+    .then((res) => {
+      const payload = Array.isArray(res?.data)
+        ? res.data
+        : res?.data?.data || res?.data || [];
+      return payload;
+    })
+    .catch((err) => {
+      console.error(" error:", err?.response?.statusText || err.message || err);
+      return [];
+    });
 export const fetchPublicServices = (params = {}) =>
   api
     .get("/services/public", { params })
@@ -42,4 +50,4 @@ export const fetchPublicService = async (id) => {
   }
 };
 
-export default { fetchPublicServices, fetchPublicService };
+export default { fetchPublicServices, fetchPublicService, fetchServiceBanners };

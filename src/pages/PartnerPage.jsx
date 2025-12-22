@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { fetchPublicPartners, fetchPartnerBanners } from "../api/partners";
+import Banner from "../components/Banner";
 
 /* small local styles used for hero and card hover */
 const GLOBAL_STYLES = `
@@ -14,89 +15,12 @@ const GLOBAL_STYLES = `
 `;
 
 /* ----------------- Hero ----------------- */
-function Hero({ banner, onViewPartners }) {
-  const [isDark, setIsDark] = useState(true);
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    if (!banner?.image_url) return;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      // quick luminance calc (best-effort)
-      try {
-        const c = document.createElement("canvas");
-        const ctx = c.getContext("2d");
-        const w = (c.width = Math.min(80, img.naturalWidth || 80));
-        const h = (c.height = Math.min(80, img.naturalHeight || 80));
-        ctx.drawImage(img, 0, 0, w, h);
-        const d = ctx.getImageData(0, 0, w, h).data;
-        let total = 0;
-        for (let i = 0; i < d.length; i += 4) {
-          total += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-        }
-        const avg = total / (d.length / 4);
-        setIsDark(avg < 150);
-      } catch {
-        setIsDark(true);
-      }
-    };
-    img.onerror = () => setIsDark(true);
-    img.src = banner.image_url;
-    imgRef.current = img;
-  }, [banner]);
-
-  const overlayClass = isDark ? "hero-overlay" : "hero-overlay";
-
+function PartnerHero() {
   return (
-    <header className="relative h-[60vh] min-h-[360px] flex items-center justify-center overflow-hidden">
-      <style>{GLOBAL_STYLES}</style>
-
-      <div className="absolute inset-0 hero-parallax">
-        <img
-          src={banner?.image_url}
-          alt={banner?.title || "Partners banner"}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=2400&q=85&fit=crop";
-          }}
-        />
-      </div>
-
-      <div className={`absolute inset-0 ${overlayClass}`} />
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center text-white">
-        {banner?.title && (
-          <h1 className="font-extrabold text-3xl md:text-5xl lg:text-6xl leading-tight">
-            {banner.title}
-          </h1>
-        )}
-        {banner?.subtitle && (
-          <p className="mt-4 text-lg md:text-2xl max-w-3xl mx-auto">
-            {banner.subtitle}
-          </p>
-        )}
-
-        <div className="mt-8 flex gap-4 justify-center flex-wrap">
-          <button
-            onClick={onViewPartners}
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full font-semibold shadow-lg transition bg-white text-emerald-700 hover:bg-gray-100"
-          >
-            View All Partners <ArrowRight className="w-5 h-5" />
-          </button>
-
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full font-semibold border border-white/30 text-white transition bg-white/10 backdrop-blur hover:bg-white/20"
-          >
-            Become a Partner
-          </a>
-        </div>
-      </div>
-    </header>
+    <Banner
+      fetchData={fetchPartnerBanners}
+      fallbackTitle="Event"
+    />
   );
 }
 
@@ -238,7 +162,7 @@ export default function PartnersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <Hero
+      <PartnerHero
         banner={
           banner ?? {
             title: "Our Partners",

@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Moon, Sun } from "lucide-react"; // Importing icons for clarity
-
+import { Contact, Contact2Icon, Moon, Sun } from "lucide-react"; // Importing icons for clarity
+import { fetchWidgets } from "../api/widget";
 const navItems = [
   { name: "Home", href: "/" },
+  { name: "Service", href: "/services" },
   { name: "About Us", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Products", href: "/products" },
-  { name: "Partners", href: "/partners" },
-  { name: "Customers", href: "/customers" }, // Changed from 'Customer' to 'Customers' for consistency
-  { name: "Contact", href: "/contact" }, // <-- NEW: Added Contact to main navigation list
+  { name: "Solution", href: "/solution" },
+  { name: "Career", href: "/jobs" },
+  { name: "Customer", href: "/customers" },
+  { name: "Contact Us", href: "/contact" },
 ];
 
 export default function Header() {
@@ -18,7 +18,21 @@ export default function Header() {
   const location = useLocation();
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
+  const [widget, setWidget] = useState(null);
 
+  useEffect(() => {
+    const loadWidget = async () => {
+      try {
+        const res = await fetchWidgets();
+        if (res.data?.data?.length > 0) {
+          setWidget(res.data.data[0]); // assuming single widget
+        }
+      } catch (error) {
+        console.error("Failed to fetch footer widget:", error);
+      }
+    };
+    loadWidget();
+  }, []);
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem("theme") || "light";
@@ -94,36 +108,38 @@ export default function Header() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400" />
+      <div className="h-1 w-full bg-linear-to-r from-emerald-400 via-teal-400 to-cyan-400" />
 
       <div className={`transition-all duration-300 ${headerBg}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-600 to-emerald-500 text-white flex items-center justify-center font-bold shadow">
-                TC
-              </div>
+            <div className="col-span-2 lg:col-span-2">
+              <Link to="/" className="flex items-center gap-2 mb-4">
+                {widget?.app_logo_url ? (
+                  <img
+                    src={widget.app_logo_url}
+                    alt="Current Logo"
+                    className="h-18 rounded-full"
+                    style={{
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)", // lighter shadow
+                    }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-md bg-linear-to-br from-teal-600 to-emerald-500 text-slate-700 flex items-center justify-center font-bold text-sm">
+                    TC
+                  </div>
+                )}
 
-              <div
-                className={`hidden sm:block ${
-                  isTransparentAtTop
-                    ? "text-white"
-                    : "text-slate-800 dark:text-slate-100"
-                }`}
-              >
-                <div className="font-extrabold">TCAM Solution</div>
-                <div
-                  className={`text-xs ${
-                    isTransparentAtTop
-                      ? "text-white/80"
-                      : "text-slate-500 dark:text-slate-400"
-                  }`}
-                >
-                  Client site
+                <div>
+                  <span className="text-xl font-extrabold gradient-text">
+                    {widget?.app_name || "TCAM Solution"} <br />
+                  </span>
+
+                  {widget?.app_sort_desc}
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-6">
@@ -142,13 +158,13 @@ export default function Header() {
                       relative px-2 py-1 text-sm transition-colors duration-200 inline-block
                       ${
                         isTransparentAtTop
-                          ? "text-white"
+                          ? "text-slate-600"
                           : "text-slate-700 dark:text-slate-200"
                       }
                       hover:text-emerald-600
                       
                       /* Custom underbar for active/hover */
-                      after:absolute after:left-0 after:bottom-0 after:h-[2px]
+                      after:absolute after:left-0 after:bottom-0 after:h-0.5
                       after:bg-emerald-500 after:rounded-full after:transition-all after:duration-300
                       
                       /* Hover effect: width expands to full */
@@ -169,7 +185,7 @@ export default function Header() {
               {/* Contact Button (CTA style) */}
               <Link
                 to="/contact" // Path must match the route in App.jsx
-                className={`ml-3 inline-flex items-center px-4 py-2 rounded-md text-sm font-medium shadow-sm transition
+                className={`ml-3 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium shadow-sm transition
                   ${
                     isActive("/contact") // Use isActive for correct styling
                       ? "bg-emerald-700 text-white dark:bg-emerald-600"
@@ -180,28 +196,8 @@ export default function Header() {
                 `}
                 aria-current={isActive("/contact") ? "page" : undefined}
               >
-                Contact
+                <Contact2Icon /> Contact Us
               </Link>
-
-              {/* Theme Toggle */}
-              <button
-                ref={toggleRef}
-                onClick={() =>
-                  setTheme((t) => (t === "dark" ? "light" : "dark"))
-                }
-                aria-label="Toggle theme"
-                className={`ml-3 p-2 rounded-md focus:outline-none focus:ring-2 ${
-                  isTransparentAtTop
-                    ? "text-white focus:ring-white/60"
-                    : "text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
-                }`}
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-5 h-5" />
-                ) : (
-                  <Moon className="w-5 h-5" />
-                )}
-              </button>
             </nav>
 
             {/* Mobile Buttons */}
@@ -214,7 +210,7 @@ export default function Header() {
                 aria-label="Toggle theme"
                 className={`mr-1 p-2 rounded-md focus:outline-none focus:ring-2 ${
                   isTransparentAtTop
-                    ? "text-white focus:ring-white/60"
+                    ? "text-slate-700 focus:ring-white/60"
                     : "text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
                 }`}
               >
@@ -233,7 +229,7 @@ export default function Header() {
                 aria-label={open ? "Close menu" : "Open menu"}
                 className={`p-2 rounded-md focus:outline-none focus:ring-2 ${
                   isTransparentAtTop
-                    ? "text-white/90 focus:ring-white"
+                    ? "text-slate-700 focus:ring-white"
                     : "text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
                 }`}
               >

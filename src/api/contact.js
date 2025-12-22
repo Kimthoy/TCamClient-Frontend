@@ -2,6 +2,22 @@
 import api from "./index";
 
 const ENDPOINT = "/contact-messages";
+export const fetchContactBanners = (params = {}) =>
+  api
+    .get("/banners/public", { params: { page: "contact", ...params } })
+    .then((res) => {
+      const payload = Array.isArray(res?.data)
+        ? res.data
+        : res?.data?.data || res?.data || [];
+      return payload;
+    })
+    .catch((err) => {
+      console.error(
+        "fetchPartnerBanners error:",
+        err?.response?.statusText || err.message || err
+      );
+      return [];
+    });
 
 export async function sendContactMessage(payload) {
   return api

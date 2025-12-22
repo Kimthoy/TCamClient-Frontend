@@ -1,41 +1,86 @@
-import React from "react";
-import { Mail, Phone, MapPin, Linkedin, Facebook, Twitter } from "lucide-react";
-import { Link } from "react-router-dom"; // Assuming you use React Router Link
-
+import React, { useEffect, useState } from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { fetchWidgets } from "../api/widget";
+import { FaTelegram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { fetchCountries } from "../api/admin_location";
 const Footer = () => {
+  const [widget, setWidget] = useState(null);
+  const [countries, setCountries] = useState([]);
+  useEffect(() => {
+    const loadWidget = async () => {
+      try {
+        const res = await fetchWidgets();
+        if (res.data?.data?.length > 0) {
+          setWidget(res.data.data[0]); // assuming single widget
+        }
+      } catch (error) {
+        console.error("Failed to fetch footer widget:", error);
+      }
+    };
+    loadWidget();
+  }, []);
+
+  useEffect(() => {
+    loadCountries();
+  }, []);
+
+  const loadCountries = async () => {
+    const data = await fetchCountries();
+    setCountries(data);
+  };
+  const getColorClass = (color) => {
+    switch (color?.toLowerCase()) {
+      case "blue":
+        return "text-blue-600";
+      case "red":
+        return "text-red-600";
+      case "yellow":
+        return "text-yellow-500";
+      default:
+        return "text-gray-800";
+    }
+  };
+  const cambodia = countries.filter((c) => c.country_name === "Cambodia")[0];
   return (
-    // REMOVED mt-12 margin to ensure no gap above it
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-slate-200 text-black">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        {/* --- Main Grid Layout --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 border-b border-gray-700 pb-10">
-          {/* Column 1: Company Logo & Slogan (Spans 2 columns on large screen) */}
+          {/* Logo & Slogan */}
           <div className="col-span-2 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              {/* Logo Box (Matches Header) */}
-              <div className="w-8 h-8 rounded-md bg-gradient-to-br from-teal-600 to-emerald-500 text-white flex items-center justify-center font-bold text-sm">
-                TC
-              </div>
+              {widget?.app_logo_url ? (
+                <img
+                  src={widget.app_logo_url}
+                  alt="Current Logo"
+                  className="h-12 "
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-teal-600 to-emerald-500 text-slate-700 flex items-center justify-center font-bold text-sm">
+                  TC
+                </div>
+              )}
+
               <span className="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-400">
-                TCAM Solution
+                {widget?.app_name || "TCAM Solution"}
               </span>
             </Link>
-            <p className="text-sm text-gray-400 max-w-xs mt-4">
-              Your partner in digital transformation, delivering innovative
-              cloud, data, and security solutions for business excellence.
+            <p className="text-sm text-slate-700 max-w-xs mt-4">
+              {widget?.abstract_desc ||
+                "Your partner in digital transformation, delivering innovative cloud, data, and security solutions for business excellence."}
             </p>
           </div>
 
-          {/* Column 2: Quick Links / Navigation */}
+          {/* Quick Links */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Quick Links
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+              Quick link
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-400 hover:text-emerald-400 transition text-sm"
+                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
                   About Us
                 </Link>
@@ -43,109 +88,114 @@ const Footer = () => {
               <li>
                 <Link
                   to="/services"
-                  className="text-gray-400 hover:text-emerald-400 transition text-sm"
+                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
-                  Services
+                  Our Services
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/products"
-                  className="text-gray-400 hover:text-emerald-400 transition text-sm"
+                  to="/events"
+                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
-                  Products
+                  Our Events
                 </Link>
               </li>
               <li>
                 <Link
                   to="/partners"
-                  className="text-gray-400 hover:text-emerald-400 transition text-sm"
+                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
-                  Partners
+                  Our Partners
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Contact Info */}
+          {/* Contact Info */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold text-white mb-4">Contact</h3>
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+              Contact
+            </h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <Mail className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                <a
-                  href="mailto:contact@tcam.com"
-                  className="text-gray-400 hover:text-emerald-400 transition"
-                >
-                  contact@tcam.com
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Phone className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                <a
-                  href="tel:+123456789"
-                  className="text-gray-400 hover:text-emerald-400 transition"
-                >
-                  +1 (234) 567-890
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                <span className="text-gray-400">
-                  123 Tech Avenue, Suite 100
-                </span>
-              </li>
+              {widget?.contact_email && (
+                <li className="flex items-start gap-2">
+                  <Mail className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
+                  <a
+                    href={`mailto:${widget.contact_email}`}
+                    className="text-slate-700 hover:text-emerald-400 transition"
+                  >
+                    {widget.contact_email}
+                  </a>
+                </li>
+              )}
+              {widget?.contact_number && (
+                <li className="flex items-start gap-2">
+                  <Phone className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
+                  <a
+                    href={`tel:${widget.contact_number}`}
+                    className="text-slate-700 hover:text-emerald-400 transition"
+                  >
+                    {widget.contact_number}
+                  </a>
+                </li>
+              )}
+
+              {cambodia && cambodia.offices?.[0] && (
+                <li className="flex items-start gap-2">
+                  <MapPin className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
+                  <div
+                    className={`flex items-center mb-4 ${getColorClass(
+                      cambodia.icon_color
+                    )}`}
+                  ></div>
+
+                  <div className=" text-sm">
+                    <p>
+                      {cambodia.offices[0].address}
+                      {cambodia.offices[0].city &&
+                        `, ${cambodia.offices[0].city}`}
+                      {cambodia.offices[0].province &&
+                        `, ${cambodia.offices[0].province}`}
+                    </p>
+                  </div>
+                </li>
+              )}
             </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+              Contact by Media
+            </h3>
+            <div className="flex gap-5">
+              <a
+                href={widget?.contact_youtube || "#"}
+                className="text-slate-700 hover:text-emerald-400 transition"
+              >
+                <FaYoutube className="w-6 h-6" />
+              </a>
+              <a
+                href={widget?.contact_facebook || "#"}
+                aria-label="Facebook"
+                className="text-slate-700 hover:text-emerald-400 transition"
+              >
+                <FaFacebook className="w-6 h-6" />
+              </a>
+              <a
+                href={widget?.contact_telegram || "#"}
+                aria-label="Facebook"
+                className="text-slate-700 hover:text-emerald-400 transition"
+              >
+                <FaTelegram className="w-6 h-6" />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* --- Bottom Row: Copyright & Social Links --- */}
+        {/* Bottom Row */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8">
-          {/* Copyright */}
           <div className="text-sm text-gray-500 mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} ClientApp (TCAM Solution). All
-            rights reserved.
-          </div>
-
-          {/* Social Links */}
-          <div className="flex items-center space-x-5">
-            <a
-              href="https://linkedin.com"
-              aria-label="LinkedIn"
-              className="text-gray-400 hover:text-emerald-400 transition"
-            >
-              <Linkedin className="w-6 h-6" />
-            </a>
-            <a
-              href="https://facebook.com"
-              aria-label="Facebook"
-              className="text-gray-400 hover:text-emerald-400 transition"
-            >
-              <Facebook className="w-6 h-6" />
-            </a>
-            <a
-              href="https://twitter.com"
-              aria-label="Twitter"
-              className="text-gray-400 hover:text-emerald-400 transition"
-            >
-              <Twitter className="w-6 h-6" />
-            </a>
-          </div>
-
-          {/* Legal Links (Privacy, Terms) */}
-          <div className="flex space-x-6 text-sm mt-4 md:mt-0">
-            <Link
-              to="/privacy"
-              className="text-gray-500 hover:text-emerald-400 transition duration-150"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              to="/terms"
-              className="text-gray-500 hover:text-emerald-400 transition duration-150"
-            >
-              Terms of Service
-            </Link>
+            {widget?.footer_ownership || "TCAM Solution"}
           </div>
         </div>
       </div>

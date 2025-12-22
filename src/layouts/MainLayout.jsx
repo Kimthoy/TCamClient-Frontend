@@ -5,14 +5,17 @@ import Footer from "../components/Footer.jsx"; // Adjust path if needed
 // Assume 'children' is the content from your pages (like HomePage.jsx)
 const MainLayout = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <div className="mb-[68px]">
+        <Header />
+      </div>
+      <div className="min-h-screen flex flex-col">
+        {/* Main Content Area - Expands to fill available space */}
+        <main className="grow ">{children}</main>
 
-      {/* Main Content Area - Expands to fill available space */}
-      <main className="flex-grow">{children}</main>
-
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 
