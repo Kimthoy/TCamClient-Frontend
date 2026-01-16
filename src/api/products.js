@@ -1,9 +1,9 @@
 // src/api/products.js
 import api from "./index";
 
-export const fetchProductBanners = () =>
+export const fetchSolutionBanners = () =>
   api
-    .get("/banners/public", { params: { page: "products" } })
+    .get("/banners/public", { params: { page: "solutions" } })
     .then((res) => {
       const payload = Array.isArray(res?.data)
         ? res.data
@@ -84,8 +84,13 @@ export const fetchPublicProduct = (id) =>
       throw err;
     });
 
+export const fetchSubProductsByProduct = (productId) => {
+  return api.get(`/products/${productId}/sub-products`);
+};
 export default {
-  fetchProductBanners,
+  fetchSolutionBanners,
   fetchPublicProducts,
   fetchPublicProduct,
+  
+  fetchSubProductsByProduct,
 };

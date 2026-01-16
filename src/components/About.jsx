@@ -60,7 +60,7 @@ export default function AboutPage() {
               )}
 
               {/* Offices */}
-              {about.operational_offices && (
+              {/* {about.operational_offices && (
                 <ul className="grid sm:grid-cols-2 gap-3">
                   {about.operational_offices
                     .join(";")
@@ -76,14 +76,15 @@ export default function AboutPage() {
                       </li>
                     ))}
                 </ul>
-              )}
+              )} */}
 
               {/* Descriptions */}
-              {about.intro_text && (
+
+              {/* {about.intro_text && (
                 <p className="text-emerald-800/80 leading-7">
                   {about.intro_text}
                 </p>
-              )}
+              )} */}
 
               {about.services_description && (
                 <p className="text-emerald-800/80 leading-7">

@@ -118,7 +118,7 @@ export default function ServicePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <button className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition">
+                    <button className="w-full cursor-pointer py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition">
                       {plan.cta_text || "Contact Now"}
                     </button>
                   </a>

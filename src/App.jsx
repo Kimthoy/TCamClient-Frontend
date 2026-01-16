@@ -18,6 +18,8 @@ import JobDetail from "./pages/JobDetail";
 import ApplyCV from "./pages/ApplyCV";
 import About from "./components/About";
 import CertificationEventsList from "./pages/CertificationEvent";
+import SubProductDetail from "./components/SubProductDetail";
+import EachSubDetail from "./components/EachSubDetail";
 
 export default function App() {
   return (
@@ -37,6 +39,11 @@ export default function App() {
         <Route path="/jobs" element={<Job />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
         <Route path="/jobs/:id/apply" element={<ApplyCV />} />
+        <Route
+          path="/products/:productId/sub-products"
+          element={<SubProductDetail />}
+        />
+        <Route path="/sub-products/:subProductId" element={<EachSubDetail />} />
       </Routes>{" "}
     </MainLayout>
   );

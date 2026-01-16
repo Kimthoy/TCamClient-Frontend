@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { fetchProductBanners, fetchPublicProducts } from "../api/products";
+import { fetchSolutionBanners, fetchPublicProducts } from "../api/products";
 import { fetchServices } from "../api/home";
 import { fetchPublicIndustries } from "../api/industry";
 import Banner from "../components/Banner";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import ProductList from "../components/Product";
 
 const fallbackBanner = {
   title: "Our Solutions",
@@ -14,23 +15,8 @@ const fallbackBanner = {
 };
 
 function SolutionHero() {
-  const [banners, setBanners] = useState([]);
-
-  useEffect(() => {
-    let mounted = true;
-    fetchProductBanners()
-      .then((arr) => mounted && setBanners(Array.isArray(arr) ? arr : []))
-      .catch(() => mounted && setBanners([]));
-    return () => (mounted = false);
-  }, []);
-
-  const hero = banners.length > 0 ? banners[0] : fallbackBanner;
-
   return (
-    <Banner
-      fetchData={() => Promise.resolve([hero])}
-      fallbackTitle={hero.title}
-    />
+    <Banner fetchData={fetchSolutionBanners} fallbackTitle="Solution page" />
   );
 }
 
@@ -66,7 +52,7 @@ function ProductCard({ product }) {
 function ServiceCard({ service }) {
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-md hover:shadow-xl overflow-hidden flex flex-col transition"
+      className="bg-transparent  overflow-hidden flex flex-col transition"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
@@ -168,10 +154,10 @@ function SolutionByIndustry({ industries }) {
           })}
         </div>
       </div>
+      
     </section>
   );
 }
-
 
 export default function Solution() {
   const [services, setServices] = useState({ loading: true, data: [] });
@@ -215,7 +201,7 @@ export default function Solution() {
         {/* Services */}
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            Our Services
+            Our Solutions
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.loading
@@ -232,31 +218,7 @@ export default function Solution() {
         </section>
 
         {/* Products */}
-        <section className="mt-20">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            Our Products
-          </h2>
-          {loadingProducts ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="p-4 bg-gray-100 rounded-xl animate-pulse h-72"
-                />
-              ))}
-            </div>
-          ) : productsPage?.data?.length ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {productsPage.data.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 py-20">
-              No products available.
-            </p>
-          )}
-        </section>
+        <ProductList perPage={9} />
 
         {/* Industries */}
         {industries.length > 0 && (

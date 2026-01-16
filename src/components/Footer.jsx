@@ -73,32 +73,16 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
-              Quick link
+            <h3 className="text-lg font-semibold text-slate-700 mb-4 uppercase">
+              Mores
             </h3>
             <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/about"
-                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services"
-                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
-                >
-                  Our Services
-                </Link>
-              </li>
               <li>
                 <Link
                   to="/events"
                   className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
-                  Our Events
+                  Recently Events
                 </Link>
               </li>
               <li>
@@ -106,89 +90,10 @@ const Footer = () => {
                   to="/partners"
                   className="text-slate-700 hover:text-emerald-400 transition text-sm"
                 >
-                  Our Partners
+                  Partners
                 </Link>
               </li>
             </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
-              Contact
-            </h3>
-            <ul className="space-y-3 text-sm">
-              {widget?.contact_email && (
-                <li className="flex items-start gap-2">
-                  <Mail className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                  <a
-                    href={`mailto:${widget.contact_email}`}
-                    className="text-slate-700 hover:text-emerald-400 transition"
-                  >
-                    {widget.contact_email}
-                  </a>
-                </li>
-              )}
-              {widget?.contact_number && (
-                <li className="flex items-start gap-2">
-                  <Phone className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                  <a
-                    href={`tel:${widget.contact_number}`}
-                    className="text-slate-700 hover:text-emerald-400 transition"
-                  >
-                    {widget.contact_number}
-                  </a>
-                </li>
-              )}
-
-              {cambodia && cambodia.offices?.[0] && (
-                <li className="flex items-start gap-2">
-                  <MapPin className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-[2px]" />
-                  <div
-                    className={`flex items-center mb-4 ${getColorClass(
-                      cambodia.icon_color
-                    )}`}
-                  ></div>
-
-                  <div className=" text-sm">
-                    <p>
-                      {cambodia.offices[0].address}
-                      {cambodia.offices[0].city &&
-                        `, ${cambodia.offices[0].city}`}
-                      {cambodia.offices[0].province &&
-                        `, ${cambodia.offices[0].province}`}
-                    </p>
-                  </div>
-                </li>
-              )}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
-              Contact by Media
-            </h3>
-            <div className="flex gap-5">
-              <a
-                href={widget?.contact_youtube || "#"}
-                className="text-slate-700 hover:text-emerald-400 transition"
-              >
-                <FaYoutube className="w-6 h-6" />
-              </a>
-              <a
-                href={widget?.contact_facebook || "#"}
-                aria-label="Facebook"
-                className="text-slate-700 hover:text-emerald-400 transition"
-              >
-                <FaFacebook className="w-6 h-6" />
-              </a>
-              <a
-                href={widget?.contact_telegram || "#"}
-                aria-label="Facebook"
-                className="text-slate-700 hover:text-emerald-400 transition"
-              >
-                <FaTelegram className="w-6 h-6" />
-              </a>
-            </div>
           </div>
         </div>
 

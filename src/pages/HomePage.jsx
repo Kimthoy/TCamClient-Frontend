@@ -11,7 +11,6 @@ import {
 } from "../api/home";
 import { fetchPublicEvents } from "../api/event";
 import Banner from "../components/Banner";
-import About from "../components/About";
 import AboutPage from "../components/About";
 
 // =========================
@@ -40,7 +39,7 @@ const GLOBAL_STYLES = `
 // COMPONENTS
 // =========================
 function HomeHero() {
-  return <Banner fetchData={fetchHomeBanners} fallbackTitle="Careers" />;
+  return <Banner fetchData={fetchHomeBanners} fallbackTitle="Home" />;
 }
 
 function PartnerCard({ p }) {
@@ -168,6 +167,12 @@ export default function HomePage() {
       <AboutPage />
       {/* ABOUT */}
       <section className="py-20 bg-emerald-50/10">
+        <h2 className="text-3xl  md:text-4xl text-center font-black text-emerald-900">
+          Our Posted
+        </h2>
+        <p className="mt-4 text-lg text-center text-gray-700 mb-16">
+          There are recently our post and informations.
+        </p>
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <motion.div
@@ -305,7 +310,7 @@ export default function HomePage() {
                       {/* Learn More button */}
                       <a
                         href={`/solution`}
-                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-emerald-100 text-emerald-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out self-start hover:bg-emerald-200"
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-emerald-100 text-emerald-900 rounded-full  transition-opacity duration-500 ease-in-out self-start hover:bg-emerald-200"
                       >
                         Learn More
                         <CircleArrowOutUpRight className="w-4 h-4" />
@@ -413,7 +418,7 @@ export default function HomePage() {
                     rel="noopener noreferrer"
                     className="mt-auto inline-flex items-center gap-2 px-4 py-2 rounded-full
                          bg-emerald-50 text-emerald-700 font-medium text-sm
-                         opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                         transition-opacity duration-300
                          shadow-sm hover:shadow-md"
                   >
                     Visit Site <ExternalLink className="w-4 h-4" />

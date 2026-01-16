@@ -1,6 +1,6 @@
 import api from "./index";
 
-export const fetchPartnerBanners = (params = {}) =>
+export const fetchJobBanners = (params = {}) =>
   api
     .get("/banners/public", { params: { page: "jobs", ...params } })
     .then((res) => {

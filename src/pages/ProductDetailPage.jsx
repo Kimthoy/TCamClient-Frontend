@@ -12,7 +12,7 @@ import {
   CheckCircle,
   ChevronRight,
 } from "lucide-react";
-import { fetchProductBanners, fetchPublicProducts } from "../api/products";
+import { fetchPublicProducts } from "../api/products";
 
 // Reuse exact same brightness analyzer
 function analyzeImageBrightness(imgElement) {
@@ -86,92 +86,6 @@ const GLOBAL_STYLES = `
   .style-pill button.active { background: white; color: #059669; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 `;
 
-// Shared Hero Component (same as ProductPage)
-function Hero({ banner, titleStyle, onToggleStyle }) {
-  const [isDark, setIsDark] = useState(null);
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => setIsDark(analyzeImageBrightness(img));
-    img.onerror = () => setIsDark(false);
-    img.src =
-      banner?.image_url ||
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=2400&q=85";
-  }, [banner]);
-
-  useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY || window.pageYOffset);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const parallax = `translateY(${Math.min(scrollY * 0.06, 60)}px) scale(${
-    1 + Math.min(scrollY * 0.0007, 0.02)
-  })`;
-  const overlayClass = isDark ? "hero-overlay" : "hero-overlay--light";
-
-  const titleClasses = [
-    "font-extrabold leading-tight text-white text-5xl md:text-7xl lg:text-8xl",
-    titleStyle === "stroke" ? "title-stroke--light" : "",
-    titleStyle === "shadow" ? "title-shadow" : "",
-    titleStyle === "both" ? "title-stroke--light title-shadow-strong" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return (
-    <header className="relative h-[80vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-      <style>{GLOBAL_STYLES}</style>
-
-      <div
-        className="absolute inset-0 hero-parallax"
-        style={{ transform: parallax }}
-      >
-        <img
-          src={
-            banner?.image_url ||
-            "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=2400&q=85"
-          }
-          alt={banner?.title || "Products"}
-          className="w-full h-full object-cover"
-          onError={(e) =>
-            (e.currentTarget.src =
-              "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=2400&q=85")
-          }
-        />
-      </div>
-
-      <div className={`absolute inset-0 ${overlayClass}`} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-        {/* Style Toggle (optional on detail page) */}
-        <div className="mb-8">
-          <div className="style-pill inline-flex items-center p-1">
-            {["none", "stroke", "shadow", "both"].map((s) => (
-              <button
-                key={s}
-                onClick={() => onToggleStyle(s)}
-                className={s === titleStyle ? "active" : ""}
-              >
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <h1 className={titleClasses}>{banner?.title || "Our Products"}</h1>
-        {banner?.subtitle && (
-          <p className="mt-6 text-xl md:text-3xl text-white/90 font-light max-w-4xl mx-auto">
-            {banner.subtitle}
-          </p>
-        )}
-      </div>
-    </header>
-  );
-}
-
 // Main Product Detail Page
 export default function ProductDetailPage() {
   const { id } = useParams(); // From URL: /products/123
@@ -188,7 +102,6 @@ export default function ProductDetailPage() {
     const loadData = async () => {
       try {
         const [banners, productsResponse] = await Promise.all([
-          fetchProductBanners(),
           fetchPublicProducts({ per_page: 50, page: 1 }), // Fetch enough to find product
         ]);
 

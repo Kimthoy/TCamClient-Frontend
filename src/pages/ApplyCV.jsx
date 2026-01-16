@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { submitApplyCV } from "../api/applycv";
-import { getJobById, fetchPartnerBanners } from "../api/job";
+import { getJobById, fetchJobBanners } from "../api/job";
 import { User } from "lucide-react";
 import Swal from "sweetalert2";
 import Banner from "../components/Banner";
 /* Hero Component */
 function JobHero() {
-  return (
-    <Banner
-      fetchData={fetchPartnerBanners}
-      fallbackTitle="Careers"
-
-    />
-  );
+  return <Banner fetchData={fetchJobBanners} fallbackTitle="Careers" />;
 }
 
 /* Apply CV Page */
 export default function ApplyCV() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [job, setJob] = useState(null);
   const [form, setForm] = useState({
@@ -77,10 +71,45 @@ export default function ApplyCV() {
 
     setForm((prev) => ({ ...prev, cv: file }));
   };
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!form.first_name.trim())
+      newErrors.first_name = "First name is required";
+    if (!form.last_name.trim()) newErrors.last_name = "Last name is required";
+    if (!form.gender.trim()) newErrors.gender = "Gender is required";
+
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!form.phone_number) {
+      newErrors.phone_number = "Contact number is required";
+    } else if (!/^[0-9+\-\s]{8,15}$/.test(form.phone_number)) {
+      newErrors.phone_number = "Invalid phone number";
+    }
+
+    if (!file) {
+      newErrors.file = "CV is required";
+    } else if (file.type !== "application/pdf") {
+      newErrors.file = "Only PDF files are allowed";
+    } else if (file.size > 2 * 1024 * 1024) {
+      newErrors.file = "File size must be under 2MB";
+    }
+
+    if (!form.consent) {
+      newErrors.consent = "You must agree before submitting";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!validateForm()) return;
     if (!form.cv) {
       return Swal.fire({
         icon: "warning",
@@ -159,6 +188,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.first_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>
+          )}
           <input
             name="last_name"
             type="text"
@@ -168,6 +200,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.last_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>
+          )}
           <input
             name="gender"
             type="text"
@@ -177,6 +212,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.gender && (
+            <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+          )}
           <input
             name="position_apply"
             type="text"
@@ -186,6 +224,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.position_apply && (
+            <p className="text-red-500 text-xs mt-1">{errors.position_apply}</p>
+          )}
           <input
             name="email"
             type="email"
@@ -195,6 +236,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          )}
           <input
             name="phone_number"
             placeholder="Contact Number"
@@ -203,6 +247,9 @@ export default function ApplyCV() {
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
             required
           />
+          {errors.phone_number && (
+            <p className="text-red-500 text-xs mt-1">{errors.phone_number}</p>
+          )}
           <input
             name="hear_about_job"
             placeholder="How did you hear about this job?"
@@ -210,6 +257,9 @@ export default function ApplyCV() {
             onChange={handleChange}
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
           />
+          {errors.hear_about_job && (
+            <p className="text-red-500 text-xs mt-1">{errors.hear_about_job}</p>
+          )}
           <input
             name="referral_name"
             placeholder="Referral Name"
@@ -217,6 +267,9 @@ export default function ApplyCV() {
             onChange={handleChange}
             className="border-2  border-slate-300  focus:outline-emerald-200/80 focus:border-2  focus:outline-4 focus:border-emerald-800  px-4 py-2 rounded-full"
           />
+          {errors.referral_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.referral_name}</p>
+          )}
           <input
             name="status"
             type="hidden"

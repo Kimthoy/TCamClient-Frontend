@@ -1,11 +1,18 @@
+// src/components/Header.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Contact, Contact2Icon, Moon, Sun } from "lucide-react"; // Importing icons for clarity
+import { Moon, Sun, Contact2Icon, ChevronDown } from "lucide-react";
 import { fetchWidgets } from "../api/widget";
+import {
+  fetchPublicProducts,
+  fetchSubProductsByProduct,
+} from "../api/products";
+import { motion, AnimatePresence } from "framer-motion";
+
 const navItems = [
   { name: "Home", href: "/" },
-  { name: "Service", href: "/services" },
   { name: "About Us", href: "/about" },
+  { name: "Service", href: "/services" },
   { name: "Solution", href: "/solution" },
   { name: "Career", href: "/jobs" },
   { name: "Customer", href: "/customers" },
@@ -13,50 +20,68 @@ const navItems = [
 ];
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // mobile menu
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
-  const [widget, setWidget] = useState(null);
 
+  const [widget, setWidget] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [productDropdown, setProductDropdown] = useState(false); // desktop dropdown
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
+
+  // Fetch widget
   useEffect(() => {
     const loadWidget = async () => {
       try {
         const res = await fetchWidgets();
-        if (res.data?.data?.length > 0) {
-          setWidget(res.data.data[0]); // assuming single widget
-        }
-      } catch (error) {
-        console.error("Failed to fetch footer widget:", error);
+        if (res.data?.data?.length > 0) setWidget(res.data.data[0]);
+      } catch (err) {
+        console.error("Failed to fetch widget:", err);
       }
     };
     loadWidget();
   }, []);
-  const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem("theme") || "light";
-    } catch {
-      return "light";
-    }
-  });
 
-  // --- Theme Toggle Logic ---
+  // Fetch products & sub-products
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") root.classList.add("dark");
-    else root.classList.remove("dark");
+    const loadProducts = async () => {
+      try {
+        const res = await fetchPublicProducts();
+        let productsData = Array.isArray(res?.data)
+          ? res.data
+          : res?.data?.data || [];
 
-    try {
-      localStorage.setItem("theme", theme);
-    } catch {}
-  }, [theme]);
-  // --- End Theme Toggle Logic ---
+        // fetch sub-products for each product
+        const productsWithSubs = await Promise.all(
+          productsData.map(async (p) => {
+            try {
+              const subRes = await fetchSubProductsByProduct(p.id);
+              return { ...p, sub_products: subRes.data || [] };
+            } catch (err) {
+              console.error(
+                "Failed to fetch sub-products for product",
+                p.id,
+                err
+              );
+              return { ...p, sub_products: [] };
+            }
+          })
+        );
 
-  useEffect(() => {
-    setOpen(false);
-  }, [location.pathname]);
+        setProducts(productsWithSubs);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      }
+    };
 
+    loadProducts();
+  }, []);
+
+  // Scroll detection
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
@@ -64,155 +89,195 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // --- Click Outside/Escape Logic ---
+  // Close mobile menu on route change
+  useEffect(() => setOpen(false), [location.pathname]);
+
+  // Click outside / Escape key
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (toggleRef.current && toggleRef.current.contains(e.target)) return;
+    const handleClickOutside = (e) => {
+      if (toggleRef.current?.contains(e.target)) return;
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setOpen(false);
+        setProductDropdown(false);
       }
-    }
-    function handleKey(e) {
-      if (e.key === "Escape") setOpen(false);
-    }
+    };
+    const handleKey = (e) => e.key === "Escape" && setProductDropdown(false);
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
-      document.addEventListener("keydown", handleKey);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-      document.removeEventListener("keydown", handleKey);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
       document.removeEventListener("keydown", handleKey);
     };
-  }, [open]);
-  // --- End Click Outside/Escape Logic ---
+  }, []);
+
+  // Theme toggle
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const isTransparentAtTop = location.pathname === "/" && !scrolled;
-
   const headerBg = isTransparentAtTop
     ? "bg-transparent shadow-none"
-    : "bg-white/60 dark:bg-slate-900/60 backdrop-blur-md shadow-md";
+    : "bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md";
 
-  // Active logic
-  const isActive = (href) => {
-    if (href === "/") return location.pathname === "/";
-    return location.pathname.startsWith(href);
-  };
+  const isActive = (href) =>
+    href === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(href);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className="h-1 w-full bg-linear-to-r from-emerald-400 via-teal-400 to-cyan-400" />
-
       <div className={`transition-all duration-300 ${headerBg}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between h-10">
             {/* Logo */}
-            <div className="col-span-2 lg:col-span-2">
-              <Link to="/" className="flex items-center gap-2 mb-4">
-                {widget?.app_logo_url ? (
-                  <img
-                    src={widget.app_logo_url}
-                    alt="Current Logo"
-                    className="h-18 rounded-full"
-                    style={{
-                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)", // lighter shadow
-                    }}
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-md bg-linear-to-br from-teal-600 to-emerald-500 text-slate-700 flex items-center justify-center font-bold text-sm">
-                    TC
-                  </div>
-                )}
-
-                <div>
-                  <span className="text-xl font-extrabold gradient-text">
-                    {widget?.app_name || "TCAM Solution"} <br />
-                  </span>
-
-                  {widget?.app_sort_desc}
+            <div className="flex items-center gap-3">
+              {widget?.app_logo_url ? (
+                <img
+                  src={widget.app_logo_url}
+                  alt="Logo"
+                  className="h-12 w-12 rounded-full shadow-sm"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-emerald-500 flex items-center justify-center font-bold text-white text-lg shadow-sm">
+                  TC
                 </div>
-              </Link>
+              )}
+              <div className="flex flex-col leading-tight">
+                <span className="text-xl font-extrabold gradient-text uppercase">
+                  {widget?.app_name || "TCAM Solution"}
+                </span>
+                <span className="text-sm text-slate-600 dark:text-slate-300">
+                  {widget?.app_sort_desc}
+                </span>
+              </div>
             </div>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-6">
-              {navItems.map((item) => {
-                // Skip the separate Contact button here as it's added below
-                if (item.href === "/contact") return null;
+            <nav className="hidden md:flex items-center gap-6 relative">
+              {navItems
+                .filter((item) => item.href !== "/contact")
+                .map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`relative px-2 py-1 text-sm transition-colors duration-300 inline-block
+                        ${
+                          active
+                            ? "text-emerald-600 font-semibold"
+                            : "text-slate-700 dark:text-slate-200"
+                        }
+                        hover:text-emerald-500
+                        after:absolute after:left-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-emerald-500
+                        after:transition-all after:duration-300
+                        ${
+                          active
+                            ? "after:w-full"
+                            : "after:w-0 hover:after:w-full"
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
 
-                const active = isActive(item.href);
+              {/* Product Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setProductDropdown((prev) => !prev)}
+                  className="ml-3 inline-flex text-slate-700 cursor-pointer dark:text-slate-200 items-center px-4 py-2 text-sm  transition"
+                >
+                  Products <ChevronDown className="w-4 h-4 ml-1" />
+                </button>
 
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`
-                      relative px-2 py-1 text-sm transition-colors duration-200 inline-block
-                      ${
-                        isTransparentAtTop
-                          ? "text-slate-600"
-                          : "text-slate-700 dark:text-slate-200"
-                      }
-                      hover:text-emerald-600
-                      
-                      /* Custom underbar for active/hover */
-                      after:absolute after:left-0 after:bottom-0 after:h-0.5
-                      after:bg-emerald-500 after:rounded-full after:transition-all after:duration-300
-                      
-                      /* Hover effect: width expands to full */
-                      after:w-0 hover:after:w-full
+                {/* Desktop Dropdown Menu */}
+                <AnimatePresence>
+                  {productDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="absolute top-14 right-0 w-72 bg-white dark:bg-slate-900 shadow-xl  dark:border-slate-700/40 z-50 overflow-hidden"
+                    >
+                      {products.length > 0 ? (
+                        <div>
+                          {products.map((product) => (
+                            <div key={product.id} className="relative group">
+                              {/* Product Link */}
+                              <Link
+                                to={`/products/${product.id}/sub-products`}
+                                className=" px-4 py-3 transition-all  text-sm text-slate-600 dark:text-slate-200 hover:scale-105  hover:bg-emerald-100 dark:hover:bg-emerald-600 flex items-center justify-between"
+                              >
+                                {product.title || product.name}
+                                {product.sub_products?.length > 0 && (
+                                  <ChevronDown className="w-3 h-3 ml-1 transition-transform group-hover:rotate-180" />
+                                )}
+                              </Link>
 
-                      ${
-                        active
-                          ? "after:w-full text-emerald-600 dark:text-emerald-400 font-semibold"
-                          : "font-medium"
-                      }
-                    `}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
+                              {/* Nested Sub-products Dropdown */}
+                              {product.sub_products?.length > 0 && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -5 }}
+                                  whileHover={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -5 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="absolute top-full left-0 mt-1 w-56 bg-white dark:bg-slate-400 rounded-lg shadow-lg border border-white/20 dark:border-slate-700/40 z-50"
+                                >
+                                  {product.sub_products.map((sub) => (
+                                    <Link
+                                      key={sub.id}
+                                      to={`/sub-product/${sub.id}`}
+                                      className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-emerald-100 dark:hover:bg-emerald-600 transition"
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="px-4 py-3 text-sm text-slate-400">
+                          No products
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-              {/* Contact Button (CTA style) */}
+              {/* Contact CTA */}
               <Link
-                to="/contact" // Path must match the route in App.jsx
-                className={`ml-3 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium shadow-sm transition
+                to="/contact"
+                className={`ml-3 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium shadow-md transition
                   ${
-                    isActive("/contact") // Use isActive for correct styling
+                    isActive("/contact")
                       ? "bg-emerald-700 text-white dark:bg-emerald-600"
                       : isTransparentAtTop
                       ? "bg-emerald-600 text-white hover:bg-emerald-700"
                       : "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
-                  }
-                `}
+                  }`}
                 aria-current={isActive("/contact") ? "page" : undefined}
               >
-                <Contact2Icon /> Contact Us
+                <Contact2Icon className="w-4 h-4 mr-1" /> Contact Us
               </Link>
             </nav>
 
             {/* Mobile Buttons */}
             <div className="md:hidden flex items-center gap-2">
-              {/* Mobile Theme Toggle */}
               <button
-                onClick={() =>
-                  setTheme((t) => (t === "dark" ? "light" : "dark"))
-                }
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 aria-label="Toggle theme"
-                className={`mr-1 p-2 rounded-md focus:outline-none focus:ring-2 ${
-                  isTransparentAtTop
-                    ? "text-slate-700 focus:ring-white/60"
-                    : "text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
-                }`}
+                className="p-2 rounded-md focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
               >
                 {theme === "dark" ? (
                   <Sun className="w-5 h-5" />
@@ -221,17 +286,12 @@ export default function Header() {
                 )}
               </button>
 
-              {/* Mobile Menu Toggle */}
               <button
                 ref={toggleRef}
                 onClick={() => setOpen((v) => !v)}
                 aria-expanded={open}
                 aria-label={open ? "Close menu" : "Open menu"}
-                className={`p-2 rounded-md focus:outline-none focus:ring-2 ${
-                  isTransparentAtTop
-                    ? "text-slate-700 focus:ring-white"
-                    : "text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
-                }`}
+                className="p-2 rounded-md focus:outline-none focus:ring-2 text-slate-700 dark:text-slate-200 focus:ring-emerald-300"
               >
                 <svg
                   className="w-6 h-6"
@@ -256,50 +316,71 @@ export default function Header() {
         <div
           ref={menuRef}
           className={`md:hidden transition-[max-height,opacity] duration-300 overflow-hidden ${
-            open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0" // Adjusted max-height
+            open ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="mx-4 my-3 rounded-xl border border-white/20 dark:border-slate-700/40 shadow-xl overflow-hidden">
-            <div className="p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md">
-              <nav className="space-y-1">
-                {navItems.map((item) => {
-                  const active = isActive(item.href);
+          <div className="mx-4 my-3 rounded-xl border border-white/20 dark:border-slate-700/40 shadow-lg overflow-hidden bg-white/50 dark:bg-slate-800/50 backdrop-blur-md">
+            <nav className="space-y-1 p-4">
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={`block px-3 py-3 rounded-md transition-colors duration-150 ${
+                      active
+                        ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300 dark:bg-emerald-600/10 font-semibold"
+                        : "text-slate-800 dark:text-slate-100 hover:bg-white/30 dark:hover:bg-slate-700/40"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
 
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      onClick={() => setOpen(false)}
-                      aria-current={active ? "page" : undefined}
-                      className={`
-                        block px-3 py-3 rounded-md transition-colors duration-150
-                        ${
-                          active
-                            ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300 dark:bg-emerald-600/10 font-semibold"
-                            : "text-slate-800 dark:text-slate-100 hover:bg-white/30 dark:hover:bg-slate-700/40"
-                        }
-                      `}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              {/* Original Mobile Contact Button (Now redundant but kept for style) */}
-              {/* <div className="mt-3 px-3">
-                <Link
-                  to="/contact"
-                  onClick={() => setOpen(false)}
-                  className="block text-center px-4 py-2 rounded-md bg-emerald-600 text-white font-medium shadow-sm hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
-                  aria-current={
-                    location.pathname === "/contact" ? "page" : undefined
-                  }
+              {/* Mobile Products */}
+              <div className="space-y-1">
+                <button
+                  onClick={() => setProductDropdown((prev) => !prev)}
+                  className={`w-full flex items-center justify-between px-4 py-2 font-medium text-sm text-emerald-600`}
                 >
-                  Contact
-                </Link>
-              </div> */}
-            </div>
+                  Product <ChevronDown className="w-4 h-4 ml-1" />
+                </button>
+
+                <AnimatePresence>
+                  {productDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden pl-4 mt-1 space-y-1"
+                    >
+                      {products.length > 0 ? (
+                        products.map((product) => (
+                          <div key={product.id} className="space-y-1">
+                            <Link
+                              to={`/products/${product.id}/sub-products`} // ✅ must match your Route
+                              className="block px-4 py-2 text-sm text-slate-800 dark:text-slate-200 rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-600 transition"
+                              onClick={() => setOpen(false)}
+                            >
+                              {product.title}{" "}
+                              {/* use the name field from your DB */}
+                            </Link>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-sm text-slate-400">
+                          No products
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </nav>
           </div>
         </div>
       </div>

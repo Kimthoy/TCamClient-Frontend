@@ -66,7 +66,7 @@ function LocationsOverview() {
                 key={office.id}
                 className="mb-6 space-y-2 text-gray-800 text-sm"
               >
-                <p className="font-medium text-emerald-800">
+                <p className="font-medium text-emerald-800 leading-snug">
                   {office.office_name}
                 </p>
                 <p>
