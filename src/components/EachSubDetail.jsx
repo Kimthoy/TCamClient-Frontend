@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import fetchSubProduct from "../api/subProductService";
 import { motion } from "framer-motion";
 import { ArrowLeft, Package, BadgeDollarSign, Info } from "lucide-react";
+import SubProductDetailSlider from "./SubProductDetailSlider";
 
 const BACKEND_URL = "http://localhost:8000";
 
@@ -77,7 +78,7 @@ export default function EachSubDetail() {
             className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6"
           >
             <ArrowLeft size={18} />
-            Back to Sub-products
+            Go Back
           </Link>
 
           {/* H1 */}
@@ -102,10 +103,9 @@ export default function EachSubDetail() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <img
-            src={imageUrl}
-            alt={subProduct.name}
-            className="w-full h-[420px] object-cover rounded-3xl shadow-lg"
+          <SubProductDetailSlider
+            images={subProduct.images || []}
+            name={subProduct.name}
           />
         </motion.figure>
 
@@ -115,10 +115,8 @@ export default function EachSubDetail() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          
-
           {/* H2 */}
-          <h2 className="mt-8 text-2xl font-bold text-gray-900">
+          <h2 className="mt-8 text-2xl uppercase font-bold text-gray-900">
             Product Overview
           </h2>
 
@@ -136,14 +134,15 @@ export default function EachSubDetail() {
                 Technical Specifications
               </h3>
 
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+              <ul className="grid grid-cols-1 sm:grid-cols-1 gap-3 text-md  text-gray-700">
                 {subProduct.properties.map((prop) => (
                   <li
                     key={prop.key}
-                    className="bg-white rounded-xl border px-4 py-3"
+                    className="bg-white rounded-xl shadow-lg px-4 py-3"
                   >
-                    <strong className="uppercase">{prop.key}:</strong>{" "}
-                    {prop.value}
+                    <strong className="uppercase">{prop.key}:</strong>
+                    <br />
+                    <span className="leading-2"> {prop.value}</span>
                   </li>
                 ))}
               </ul>

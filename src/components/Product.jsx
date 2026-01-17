@@ -35,6 +35,10 @@ export function ProductCard({ product }) {
         {product.short_description ||
           "Advanced enterprise solution for modern businesses."}
       </p>
+      <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+        {product.description ||
+          "Advanced enterprise solution for modern businesses."}
+      </p>
 
       {/* Navigate to Sub-products page */}
       <button

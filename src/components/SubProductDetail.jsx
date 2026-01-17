@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchSubProductsByProduct, fetchPublicProduct } from "../api/products";
 import ContactForm from "./ContactForm";
+import SubProductImageSlider from "./SubProductImageSlider";
 
 const BACKEND_URL = "http://localhost:8000";
 
@@ -128,10 +129,9 @@ export default function SubProductDetail() {
                 className="block rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-5"
               >
                 <div className="flex flex-col md:flex-row gap-6">
-                  <img
-                    src={imageUrl}
-                    alt={sub.name}
-                    className="w-full md:w-40 h-40 object-cover rounded-xl"
+                  <SubProductImageSlider
+                    images={sub.images || []}
+                    name={sub.name}
                   />
 
                   <div className="flex-1">
@@ -148,8 +148,7 @@ export default function SubProductDetail() {
                       <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
                         {sub.properties.map((prop) => (
                           <li key={prop.key}>
-                            <span className="font-semibold">{prop.key}:</span>{" "}
-                            {prop.value}
+                            <span className="font-semibold">{prop.key}</span>
                           </li>
                         ))}
                       </ul>

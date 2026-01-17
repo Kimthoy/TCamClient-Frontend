@@ -166,74 +166,7 @@ export default function HomePage() {
       <HomeHero />
       <AboutPage />
       {/* ABOUT */}
-      <section className="py-20 bg-emerald-50/10">
-        <h2 className="text-3xl  md:text-4xl text-center font-black text-emerald-900">
-          Our Posted
-        </h2>
-        <p className="mt-4 text-lg text-center text-gray-700 mb-16">
-          There are recently our post and informations.
-        </p>
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <motion.div
-            className="relative rounded-3xl overflow-hidden shadow-xl group"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-          >
-            <div className="absolute " />
-            <img
-              src={
-                about.data?.feature_image_url ||
-                "https://images.unsplash.com/photo-1581093588401-6a0e1a6f9a8e?w=1200&q=80"
-              }
-              alt={about.data?.title || "About Image"}
-              className="w-full h-full object-cover rounded-3xl transition-transform duration-500 group-hover:scale-105"
-              style={{ minHeight: 320 }}
-            />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-          >
-            {about.loading ? (
-              <div className="space-y-4">
-                <div className="h-10 bg-emerald-200 rounded w-3/4 animate-pulse" />
-                <div className="space-y-3">
-                  <div className="h-4 bg-emerald-200 rounded animate-pulse" />
-                  <div className="h-4 bg-emerald-200 rounded w-5/6 animate-pulse" />
-                  <div className="h-4 bg-emerald-200 rounded w-4/6 animate-pulse" />
-                </div>
-              </div>
-            ) : about.data ? (
-              <>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-emerald-900">
-                  {about.data.title}
-                </h2>
-                <div
-                  className="mt-4 text-gray-700 prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: about.data.content }}
-                />
-              </>
-            ) : (
-              <>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-emerald-900">
-                  About Us
-                </h2>
-                <p className="mt-4 text-lg text-gray-700">
-                  We deliver innovative cloud, AI, and security solutions that
-                  empower modern enterprises.
-                </p>
-              </>
-            )}
-          </motion.div>
 
-          {/* Image */}
-        </div>
-      </section>
       {/* SERVICES - Modern UI */}
       <section className="py-20 bg-emerald-50/20">
         <div className="max-w-7xl mx-auto px-6">
