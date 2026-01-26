@@ -5,6 +5,7 @@ import { ArrowRight, Trophy, Sparkles, Zap } from "lucide-react";
 import { fetchCustomerBanners, fetchPublicCustomers } from "../api/customer";
 import Banner from "../components/Banner";
 import { motion } from "framer-motion";
+import EmptyCustomer from "../components/empty/EmptyCustomer";
 function CustomerHero() {
   return <Banner fetchData={fetchCustomerBanners} fallbackTitle="Customers" />;
 }
@@ -358,8 +359,8 @@ export default function CustomersPage() {
             ))}
           </div>
         ) : (
-          <p className="text-center text-2xl text-gray-500 py-20">
-            No customer stories available at the moment.
+          <p>
+            <EmptyCustomer />
           </p>
         )}
 

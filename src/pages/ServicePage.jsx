@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { HiOutlineCheckCircle } from "react-icons/hi"; // ✅ Import icons
+import { HiOutlineCheckCircle } from "react-icons/hi";
 import { fetchSupport } from "../api/support";
 import { fetchServiceBanners } from "../api/services";
 import Banner from "../components/Banner";
@@ -8,6 +8,21 @@ import { motion } from "framer-motion";
 function ServiceHero() {
   return <Banner fetchData={fetchServiceBanners} fallbackTitle="Service" />;
 }
+
+// 🔥 Random color generator
+const getRandomColor = () => {
+  const colors = [
+    "#2563EB",
+    "#10B981",
+    "#F59E0B",
+    "#EF4444",
+    "#8B5CF6",
+    "#06B6D4",
+    "#F97316",
+  ];
+
+  return colors[Math.floor(Math.random() * colors.length)];
+};
 
 export default function ServicePage() {
   const [support, setSupport] = useState({ loading: true, data: null });
@@ -24,7 +39,6 @@ export default function ServicePage() {
     };
   }, []);
 
-  // Safe access to plans and options
   const plans = support.data?.plans || [];
   const options = support.data?.options || [];
 
@@ -34,7 +48,6 @@ export default function ServicePage() {
 
       <main className="max-w-7xl mx-auto px-4">
         {/* Section Info */}
-
         <section className="py-16 text-center">
           <motion.h2
             className="text-3xl font-bold text-gray-800 mb-4"
@@ -56,6 +69,7 @@ export default function ServicePage() {
               "Reliable support solutions tailored for your business needs."}
           </motion.p>
         </section>
+
         {/* Plans */}
         {plans.length > 0 ? (
           <section className="py-12 grid md:grid-cols-3 gap-8">
@@ -76,14 +90,9 @@ export default function ServicePage() {
                 <div
                   className="py-6 text-center text-white font-bold text-xl"
                   style={{
-                    backgroundColor:
-                      plan.badge_color === "bronze"
-                        ? "#C48F52"
-                        : plan.badge_color === "silver"
-                        ? "#B0B0B0"
-                        : plan.badge_color === "gold"
-                        ? "#E2C044"
-                        : "#2563EB",
+                    backgroundColor: plan.badge_color
+                      ? plan.badge_color
+                      : getRandomColor(),
                   }}
                 >
                   {plan.plan_name || "Plan"}
@@ -93,6 +102,7 @@ export default function ServicePage() {
                   <p className="text-gray-600 font-medium mb-4">
                     {plan.support_coverage || "Coverage info not available"}
                   </p>
+
                   <ul className="space-y-3 mb-6 text-left">
                     {plan.features?.length > 0 ? (
                       plan.features.map((feature, idx) => (
@@ -107,13 +117,14 @@ export default function ServicePage() {
                       <li className="text-gray-400">No features listed</li>
                     )}
                   </ul>
+
                   <a
                     href={`https://mail.google.com/mail/?view=cm&fs=1&to=phlochtiger999@gmail.com&su=${encodeURIComponent(
-                      `Inquiry about ${plan.plan_name || "Plan"}`
+                      `Inquiry about ${plan.plan_name || "Plan"}`,
                     )}&body=${encodeURIComponent(
                       `Hello,\n\nI am interested in the ${
                         plan.plan_name || "Plan"
-                      }.\nPlease contact me.\n`
+                      }.\nPlease contact me.\n`,
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -131,6 +142,7 @@ export default function ServicePage() {
             No support plans available.
           </p>
         )}
+
         {/* Options */}
         {options.length > 0 && (
           <section className="py-16 bg-gray-100">

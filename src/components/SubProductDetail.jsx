@@ -54,12 +54,24 @@ export default function SubProductDetail() {
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
               {product.title || product.name}
             </h1>
+            {product.website_link && (
+              <div className="flex justify-center items-center align-middle py-12 gap-3">
+                Go to with :
+                <a
+                  href={product.website_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-lg text-emerald-600 max-w-xl hover:text-emerald-700 hover:underline transition-colors"
+                >
+                  {product.website_link}
+                </a>
+              </div>
+            )}
 
             <p className="mt-4 text-lg text-gray-600 max-w-xl">
               {product.short_description ||
                 "Discover a complete range of carefully designed sub-products that extend the capabilities of this product."}
             </p>
-
             <div className="mt-6 space-y-4 text-gray-700 leading-relaxed">
               <p>
                 {product.description ||
@@ -86,7 +98,6 @@ export default function SubProductDetail() {
                 match.
               </p>
             </div>
-
             {product.category?.name && (
               <p className="mt-6 text-sm text-gray-500">
                 Category:{" "}

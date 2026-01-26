@@ -12,6 +12,8 @@ import {
 import { fetchPublicEvents } from "../api/event";
 import Banner from "../components/Banner";
 import AboutPage from "../components/About";
+import EmptyEvent from "../components/empty/EmptyEvent";
+import EmptyPartner from "../components/empty/EmptyPartner";
 
 // =========================
 // GLOBAL STYLES (Injected once)
@@ -199,7 +201,7 @@ export default function HomePage() {
                   s.image_url ||
                   s.feature_image_url ||
                   `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    s.title || "Service"
+                    s.title || "Service",
                   )}&background=ecfdf5&color=065f46&size=400`;
 
                 return (
@@ -292,7 +294,7 @@ export default function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8 }}
             >
-              No partners available.
+              <EmptyPartner />
             </motion.p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -439,7 +441,7 @@ export default function HomePage() {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
-                          }
+                          },
                         )}
                       </span>
                       <span>{event.location || "TBA"}</span>
@@ -455,7 +457,7 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                No upcoming events.
+                <EmptyEvent />
               </motion.p>
             )}
           </div>

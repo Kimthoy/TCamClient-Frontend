@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { fetchPublicPartners, fetchPartnerBanners } from "../api/partners";
 import Banner from "../components/Banner";
+import EmptyPartner from "../components/empty/EmptyPartner";
 
 /* small local styles used for hero and card hover */
 const GLOBAL_STYLES = `
@@ -16,12 +17,7 @@ const GLOBAL_STYLES = `
 
 /* ----------------- Hero ----------------- */
 function PartnerHero() {
-  return (
-    <Banner
-      fetchData={fetchPartnerBanners}
-      fallbackTitle="Event"
-    />
-  );
+  return <Banner fetchData={fetchPartnerBanners} fallbackTitle="Event" />;
 }
 
 /* ----------------- Skeletons ----------------- */
@@ -155,7 +151,7 @@ export default function PartnersPage() {
   const filtered = useMemo(() => {
     if (activeCategory === "all") return partners;
     return partners.filter(
-      (p) => String(p.category_id) === String(activeCategory)
+      (p) => String(p.category_id) === String(activeCategory),
     );
   }, [partners, activeCategory]);
 
@@ -240,7 +236,7 @@ export default function PartnersPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-600">
-            No partners found for this category.
+            <EmptyPartner />
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">

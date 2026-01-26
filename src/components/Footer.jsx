@@ -93,6 +93,14 @@ const Footer = () => {
                   Partners
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/customers"
+                  className="text-slate-700 hover:text-emerald-400 transition text-sm"
+                >
+                  Customers
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

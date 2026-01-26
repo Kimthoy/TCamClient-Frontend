@@ -44,7 +44,7 @@ export default function WhyJoinUs() {
         }}
       />
 
-      <section className="py-24 bg-gradient-to-b from-emerald-50/60 to-white">
+      <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-16">
@@ -97,7 +97,7 @@ export default function WhyJoinUs() {
                     </div>
                   </motion.div>
                 );
-              })
+              }),
             )}
           </div>
 

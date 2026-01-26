@@ -4,6 +4,7 @@ import { fetchPublicEvents } from "../api/event";
 import { MapPin, CalendarDays } from "lucide-react";
 import Banner from "../components/Banner";
 import { fetchEventBanners } from "../api/event";
+import EmptyEvent from "../components/empty/EmptyEvent";
 
 const CertificationEventsList = () => {
   const [events, setEvents] = useState([]);
@@ -13,11 +14,7 @@ const CertificationEventsList = () => {
   const [selectedEvent, setSelectedEvent] = useState(null); // for detail view
   function EventHero() {
     return (
-      <Banner
-        fetchData={fetchEventBanners}
-        fallbackTitle="Event Banner"
-      
-      />
+      <Banner fetchData={fetchEventBanners} fallbackTitle="Event Banner" />
     );
   }
 
@@ -36,8 +33,6 @@ const CertificationEventsList = () => {
 
   if (loading) return <p className="text-center mt-8">Loading events...</p>;
   if (error) return <p className="text-center mt-8 text-red-600">{error}</p>;
-  if (!events.length)
-    return <p className="text-center mt-8">No events found.</p>;
 
   const recentEvents = events.slice(0, 5); // last 5 events
 
@@ -59,7 +54,7 @@ const CertificationEventsList = () => {
             ?.scrollIntoView({ behavior: "smooth" });
         }}
       />
-      <section className="my-20 text-center">
+      <section className="my-12 text-center">
         <h2
           id="partners-list"
           className="text-2xl md:text-5xl font-black text-gray-900 mb-4"
@@ -70,6 +65,7 @@ const CertificationEventsList = () => {
           Explore upcoming events and stay updated with the latest happenings.
         </p>
       </section>
+      {!loading && !error && events.length === 0 && <EmptyEvent />}
       <div className="max-w-7xl mx-auto my-8 px-5 flex gap-8">
         {/* Main Events List / Detail */}
         <div className="max-w-7xl mx-auto my-12 px-5 grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -106,7 +102,7 @@ const CertificationEventsList = () => {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        }
+                        },
                       )}
                     </span>
 
