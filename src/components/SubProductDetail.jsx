@@ -4,7 +4,8 @@ import { fetchSubProductsByProduct, fetchPublicProduct } from "../api/products";
 import ContactForm from "./ContactForm";
 import SubProductImageSlider from "./SubProductImageSlider";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export default function SubProductDetail() {
   const { productId } = useParams();
@@ -35,7 +36,7 @@ export default function SubProductDetail() {
     );
   const productImage = product?.image
     ? `${BACKEND_URL}/storage/${product.image}`
-    : "/images/placeholder-product.png";
+    : "";
 
   return (
     <section className="max-w-6xl mx-auto px-6 py-12">
@@ -131,7 +132,7 @@ export default function SubProductDetail() {
 
             const imageUrl = primaryImage
               ? `${BACKEND_URL}/storage/${primaryImage.image_path}`
-              : "/images/placeholder-product.png";
+              : "";
 
             return (
               <Link

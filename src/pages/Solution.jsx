@@ -30,7 +30,7 @@ function ProductCard({ product }) {
       transition={{ duration: 0.8, ease: "easeInOut" }}
     >
       <img
-        src={product.feature_image_url || "/images/placeholder-product.png"}
+        src={product.feature_image_url || ""}
         alt={product.title}
         className="rounded-xl h-48 w-full object-cover mb-4 hover:scale-105 transition-transform duration-500"
       />
@@ -61,10 +61,7 @@ function ServiceCard({ service }) {
       <img
         src={
           service.image_url ||
-          service.feature_image_url ||
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            service.title || "Service"
-          )}&background=ecfdf5&color=065f46&size=400`
+          service.feature_image_url
         }
         alt={service.title}
         className="w-full h-40 object-cover"

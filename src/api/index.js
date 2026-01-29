@@ -1,10 +1,11 @@
-// src/api/index.js
 import axios from "axios";
-import { getToken } from "../utils/storage"; 
+import { getToken } from "../utils/storage";
+
+const BASE_URL = "https://backend.tcamsolution.com"; // ✅ new
 
 const api = axios.create({
-  baseURL:"/api", 
-  withCredentials: false, 
+  baseURL: `${BASE_URL}/api`, // ✅ new
+  withCredentials: false,
   headers: {
     Accept: "application/json",
   },
@@ -18,7 +19,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -27,8 +28,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
-  

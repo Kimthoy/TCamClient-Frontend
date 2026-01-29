@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Package, BadgeDollarSign, Info } from "lucide-react";
 import SubProductDetailSlider from "./SubProductDetailSlider";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export default function EachSubDetail() {
   const { subProductId } = useParams();
@@ -61,7 +62,7 @@ export default function EachSubDetail() {
 
   const imageUrl = primaryImage
     ? `${BACKEND_URL}/storage/${primaryImage.image_path}`
-    : "/images/placeholder-product.png";
+    : "";
 
   return (
     <motion.section

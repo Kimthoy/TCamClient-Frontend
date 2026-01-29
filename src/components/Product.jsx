@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 // ---------------- Product Card ----------------
 export function ProductCard({ product }) {
@@ -24,7 +25,7 @@ export function ProductCard({ product }) {
     >
       {/* Product Image */}
       <img
-        src={product.feature_image_url || "/images/placeholder-product.png"}
+        src={product.feature_image_url || ""}
         alt={product.title}
         className="rounded-xl h-48 w-full object-cover mb-4 hover:scale-105 transition-transform duration-500"
       />

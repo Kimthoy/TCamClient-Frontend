@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AUTO_SLIDE_INTERVAL = 3000;
 
 export default function SubProductImageSlider({
@@ -52,7 +53,7 @@ export default function SubProductImageSlider({
   if (!images.length) {
     return (
       <img
-        src="/images/placeholder-product.png"
+        src=""
         alt={name}
         className={`${width} ${height} object-cover rounded-xl`}
       />

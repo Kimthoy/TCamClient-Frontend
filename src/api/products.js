@@ -1,6 +1,6 @@
 // src/api/products.js
 import api from "./index";
-
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export const fetchSolutionBanners = () =>
   api
     .get("/banners/public", { params: { page: "solutions" } })
